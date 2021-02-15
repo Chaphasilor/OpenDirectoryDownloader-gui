@@ -4,7 +4,7 @@
   "description": "A web frontend for OpenDirectoryDownloader",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "Chaphasilor",
   "license": "GPL-3.0",
