@@ -20,7 +20,7 @@ const app = new Koa()
 const clients = new GuiConnection()
 
 app.use(cors())
-app.use(static(`./www/static`));
+app.use(static(`./public/static`));
 app.use(compress({
   br: {
     params: {

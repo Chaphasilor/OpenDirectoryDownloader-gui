@@ -4,7 +4,8 @@
   "description": "A web frontend for OpenDirectoryDownloader",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "cd public && npm run build"
   },
   "author": "Chaphasilor",
   "license": "GPL-3.0",
@@ -20,5 +21,8 @@
     "open-directory-downloader": "^2.0.0",
     "uuid": "^8.3.2",
     "ws": "^7.4.3"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.5.0"
   }
 }
