@@ -9,47 +9,27 @@ const OpenDirectoryDownloader = require(`open-directory-downloader`)
 const Koa = require(`koa`)
 const router = require(`@koa/router`)()
 const cors = require(`@koa/cors`)
+const static = require('koa-static')
+const compress = require('koa-compress')
 const bodyParser = require(`koa-bodyparser`)
+
+const GuiConnection = require(`./gui-connection`)
 
 const ODD = new OpenDirectoryDownloader()
 const app = new Koa()
+const clients = new GuiConnection()
 
 app.use(cors())
+app.use(static(`./www/static`));
+app.use(compress({
+  br: {
+    params: {
+      [require(`zlib`).constants.BROTLI_PARAM_QUALITY]: 5
+    }
+  },
+}))
 app.use(bodyParser())
 app.listen(process.env.PORT)
-
-router.get(`/`, async (ctx) => {
-
-  // if (!ctx.request.query.state) {
-  //   ctx.status = 400;
-  //   ctx.body = `Missing `state` query parameter (can be `on` or `off`)`;
-  //   return;
-  // }
-
-  ctx.body = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>OpenDirectoryDownloader</title>
-    </head>
-    <body>
-      
-      <form action="/scan" method="POST">
-      
-        <input type="text" name="url" id="url">
-    
-        <input type="submit" value="Scan!">
-        
-      </form>
-      
-    </body>
-    </html>
-  `
-  
-})
 
 router.post(`/scan`, async (ctx) => {
 
@@ -97,3 +77,53 @@ router.post(`/scan`, async (ctx) => {
 })
 
 app.use(router.routes());
+
+clients.on(`command`, commandHandler)
+
+async function commandHandler(socketId, command) {
+
+  switch (command[0]) {
+    case `scan`:
+      try {
+
+        info(`Client '${socketId}' requested a scan of '${command[1]}'`)
+        info(`Starting scan of '${command[1]}'`)
+        let scanResult = await ODD.scanUrl(command[1])
+        
+        // TODO add links to download urls file and json file
+        delete scanResult.jsonFile
+        delete scanResult.urlFile
+        
+        clients.send(socketId, 
+          {
+            type: `response`,
+            value: [
+              command[0],
+              {
+                status: `finished`,
+                scanResult,
+              },
+            ]
+          }
+        )
+        
+      } catch (err) {
+        error(`Error while scanning the URL:`, err)
+        clients.send(socketId, 
+          {
+            type: `error`,
+            value: [
+              command[0],
+              err[0],
+              err[1]
+            ]
+          }
+        )
+      }
+      break;
+  
+    default:
+      break;
+  }
+  
+}
