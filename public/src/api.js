@@ -134,7 +134,17 @@ export default class API {
       [url],
       (response) => {
         console.log(`response:`, response);
-        document.querySelector(`#output`).innerText = JSON.stringify(response)
+
+        switch (response.status) {
+          case `pending`:
+            console.info(response.message)
+            break;
+        
+          default:
+            document.querySelector(`#output`).innerText = JSON.stringify(response)
+            break;
+        }
+
       }
     )
     

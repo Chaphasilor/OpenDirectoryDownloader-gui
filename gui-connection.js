@@ -4,13 +4,13 @@ const uuid = require(`uuid`).v4
 
 module.exports = class GuiConnection extends EventEmitter {
 
-  constructor() {
+  constructor(server) {
 
     super()
 
+    //TODO fix port - see https://github.com/heroku-examples/node-ws-test/blob/master/index.js
     this.wss = new WebSocket.Server({
-      host: `localhost`,
-      port: 80,
+      server,
     })
     this.sockets = new Map()
 

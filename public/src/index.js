@@ -19,10 +19,15 @@ function performScan() {
 
 window.onload = function() {
 
-  api = new API(`ws://127.0.0.1`)
-  api.connectToServer()
+  let host = location.origin.replace(/^http/, 'ws')
+  api = new API(host)
+  api.connectToServer().catch(err => {
+    console.error(`Error while connecting to backend:`, err)
+  })
+  window.api = api
   
 }
+
 
 // !! IMPORTANT: !!
 // Webpack doesn't automatically assing global variables to the window context when importing the bundle
