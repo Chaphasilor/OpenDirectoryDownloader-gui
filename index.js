@@ -49,51 +49,6 @@ server.listen(process.env.PORT)
 const ODD = new OpenDirectoryDownloader()
 const clients = new GuiConnection(server)
 
-router.post(`/scan`, async (ctx) => {
-
-  if (!ctx.request.body.url) {
-    ctx.status = 400;
-    ctx.body = `Missing 'url' parameter!`;
-    return;
-  }
-
-  try {
-    if (!(new URL(ctx.request.body.url))) {
-      ctx.status = 400;
-      ctx.body = `Parameter 'url' is not a valid URL!`;
-      return;
-    }
-  } catch (err) {
-    ctx.status = 400;
-    ctx.body = `Parameter 'url' is not a valid URL!`;
-    return;
-  }
-
-  try {
-
-    let scanResult = await ODD.scanUrl(ctx.request.body.url)
-    
-    // TODO add links to download urls file and json file
-    delete scanResult.jsonFile
-    delete scanResult.urlFile
-    
-    ctx.body = {
-      status: `finished`,
-      scanResult,
-    };
-    
-  } catch (err) {
-    error(`Error while scanning the URL:`, err)
-    ctx.status = 500;
-    ctx.body = {
-      status: `error`,
-      errorMessage: err[0],
-      scanResult: err[1],
-    }
-  }
-  
-})
-
 app.use(router.routes());
 
 clients.on(`command`, commandHandler)
@@ -140,6 +95,18 @@ async function commandHandler(socketId, command) {
     case `scan`:
       try {
 
+        try {
+          if (!(new URL(command[1]))) {
+            clients.send(socketId, error(`Parameter 'url' is not a valid URL!`))
+            clients.send(socketId, end())
+            return;
+          }
+        } catch (err) {
+          clients.send(socketId, error(`Parameter 'url' is not a valid URL!`))
+          clients.send(socketId, end())
+          return;
+        }
+        
         info(`Client '${socketId}' requested a scan of '${command[1]}'`)
         info(`Starting scan of '${command[1]}'`)
 
