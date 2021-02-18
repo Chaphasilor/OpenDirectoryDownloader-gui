@@ -4,7 +4,8 @@
   "description": "A web frontend for OpenDirectoryDownloader",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "cd public && npm run build"
   },
   "author": "Chaphasilor",
   "license": "GPL-3.0",
@@ -15,6 +16,25 @@
     "dotenv": "^8.2.0",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
-    "open-directory-downloader": "^2.0.0"
+    "koa-compress": "^5.0.1",
+    "koa-static": "^5.0.0",
+    "open-directory-downloader": "^2.0.0",
+    "uuid": "^8.3.2",
+    "ws": "^7.4.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.1",
+    "browser-sync": "^2.26.13",
+    "browser-sync-webpack-plugin": "^2.2.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^5.0.0",
+    "cssnano": "^4.1.10",
+    "file-loader": "^6.1.1",
+    "postcss": "^8.1.2",
+    "postcss-loader": "^4.0.4",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^2.0.1",
+    "webpack": "^5.1.3",
+    "webpack-cli": "^4.5.0"
   }
 }
