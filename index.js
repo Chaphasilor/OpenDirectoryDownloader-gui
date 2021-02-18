@@ -111,6 +111,11 @@ async function commandHandler(socketId, command) {
         info(`Starting scan of '${command[1]}'`)
 
         clients.send(socketId, response({
+          status: `running`,
+          message: `Your scan is now running!`, 
+        }))
+
+        clients.send(socketId, response({
           status: `pending`,
           message: `Scan has been queued`,
         }))

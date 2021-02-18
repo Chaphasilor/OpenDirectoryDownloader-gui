@@ -1,10 +1,26 @@
-export default class API {
+export default class API extends EventTarget {
 
   constructor(url) {
 
+    super()
+    
     this.url = url
     this.activeCommands = []
 
+    this.generateEventListenerFunction = (callback) => (payload) => callback(payload.detail)
+
+  }
+
+  emit(eventName, payload) {
+    this.dispatchEvent(new CustomEvent(eventName, {detail: payload}));
+  }
+
+  on(eventName, callback) {
+    this.addEventListener(eventName, this.generateEventListenerFunction(callback))
+  }
+
+  off(eventName, callback) {
+    this.removeEventListener(eventName, this.generateEventListenerFunction(callback))
   }
 
   parseMessage(message) {
@@ -134,17 +150,9 @@ export default class API {
     await this.sendCommand(`scan`,
       [url],
       (response) => {
-        console.log(`response:`, response);
 
-        switch (response.status) {
-          case `pending`:
-            console.info(response.message)
-            break;
-        
-          default:
-            document.querySelector(`#output`).innerText = JSON.stringify(response)
-            break;
-        }
+        this.emit(`scanUpdate`, response)
+        console.log(`response:`, response);
 
       }
     )
