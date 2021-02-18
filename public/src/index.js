@@ -19,7 +19,12 @@ function performScan() {
 
 window.onload = function() {
 
-  let host = location.origin.replace(/^http/, 'ws')
+  let host
+  if (new URL(document.location).protocol === `https`) {
+    host = location.origin.replace(/^https/, 'wss')
+  } else {
+    host = location.origin.replace(/^http/, 'ws')
+  }
   api = new API(host)
   api.connectToServer().catch(err => {
     console.error(`Error while connecting to backend:`, err)

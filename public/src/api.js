@@ -26,6 +26,7 @@ export default class API {
   connectToServer() {
     return new Promise((resolve, reject) => {
 
+      console.info(`Connecting to websocket at ${this.url}`)
       this.socket = new WebSocket(this.url)
   
       this.socket.onopen = () => {
