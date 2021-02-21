@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  #stats-table {
+    @apply w-full border border-gray-300;
+  }
+  
+  #stats-table tr, #stats-table td {
+    @apply border border-gray-300;
+  }
+  
+  #stats-table td, #stats-table th {
+    @apply px-2 py-1;
+  }
+}

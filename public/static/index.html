@@ -18,15 +18,14 @@
   <h1 class="mt-6 mb-10 text-3xl text-center">OpenDirectoryDownloader</h1>
 
   <form
-    class="w-3/4 p-4 m-auto text-center"
+    class="flex flex-row w-3/4 p-4 m-auto mb-4 text-center"
     id="url-form"
     action="/scan"
     method="POST"
     onsubmit="event.preventDefault();"
   >
-  
     <input
-      class="w-full px-2 py-1 bg-transparent border border-gray-200 rounded-md"
+      class="w-full px-2 py-1 mr-4 bg-transparent border border-gray-200 rounded-md"
       type="text"
       name="url"
       placeholder="URL to scan"
@@ -34,14 +33,14 @@
     >
 
     <button
-      class="p-2 px-8 m-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+      class="p-2 px-8 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
       type="submit"
     >Scan!</button>
     
   </form>
 
   <div
-    class="grid grid-cols-2 grid-rows-1 gap-4 p-4 m-10 text-lg text-center border border-gray-200 rounded-lg"
+    class="grid grid-cols-2 grid-rows-1 gap-4 p-4 mx-10 mb-10 text-lg text-center border border-gray-200 rounded-lg"
   >
 
     <div
@@ -93,9 +92,18 @@
 
   <div
     id="output"
-    class="w-3/4 h-auto p-2 mx-auto overflow-x-auto break-all bg-transparent border border-gray-200 rounded-md place-self-center"
-  >
+    class="hidden w-3/4 h-auto p-2 mx-auto overflow-x-auto break-all bg-transparent border border-gray-200 rounded-md place-self-center"
+  ></div>
 
+  <div
+    class="grid w-full place-content-center"
+  >
+    <button
+      id="clipboard-button"
+      class="hidden w-64 h-20 p-2 px-8 m-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+    >
+      
+    </button>
   </div>
 
     <!-- ONLY JAVASCRIPT SHOULD GO BELOW -->

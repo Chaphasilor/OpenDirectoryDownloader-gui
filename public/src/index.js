@@ -1,6 +1,7 @@
 // import *any file or dependency (module)* that you want to bundle here
 
 import API from './api';
+import marked from 'marked'
 
 // regular javascript goes below
 
@@ -11,6 +12,9 @@ let urlInput = document.querySelector(`#url`)
 let statusField = document.querySelector(`#status`)
 let timeField = document.querySelector(`#time`)
 let output = document.querySelector(`#output`)
+let clipboardButton = document.querySelector(`#clipboard-button`)
+
+const clipboardButtonText = `Copy Stats Table to Clipboard`
 
 urlForm.addEventListener(`submit`, performScan)
 
@@ -36,31 +40,61 @@ window.onload = function() {
     console.error(`Error while connecting to backend:`, err)
   })
   
-  api.on(`scanUpdate`, (response) => {
+  api.on(`scanUpdate`, handleScanUpdate)
+  
+}
 
-    console.log(`response:`, response)
-    statusField.innerText = response.status
-    
-    switch (response.status) {
-      case `pending`:
-        console.info(response.message)
-        output.innerText = response.message
-        break;
+function handleScanUpdate(response) {
 
-      case `running`:
-        startTime = Date.now()
-        timeIntervalId = setInterval(() => {
-          timeField.innerText = formatTime(startTime)
-        }, 1000)
-        break
-    
-      default:
-        output.innerText = JSON.stringify(response)
-        clearInterval(timeIntervalId)
-        break;
-    }
-    
-  })
+  console.log(`response:`, response)
+  statusField.innerText = response.status
+  
+  switch (response.status) {
+    case `pending`:
+      console.info(response.message)
+      output.innerText = response.message
+      break;
+
+    case `running`:
+      startTime = Date.now()
+      timeIntervalId = setInterval(() => {
+        timeField.innerText = formatTime(startTime)
+      }, 1000)
+      break
+  
+    default: // finished
+
+      clearInterval(timeIntervalId)
+      // output.innerText = JSON.stringify(response)
+
+      try {
+
+        output.innerHTML = marked(response.scanResult.reddit)
+        output.getElementsByTagName(`table`)[0].id = `stats-table`
+        output.classList.remove(`hidden`)
+
+        clipboardButton.innerText = clipboardButtonText
+        clipboardButton.classList.remove(`hidden`)
+        clipboardButton.addEventListener(`click`, () => {
+          navigator.clipboard.writeText(response.scanResult.reddit);
+          clipboardButton.innerText = `Copied Successfully!`
+          setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500  )
+        })
+          
+      } catch (err) {
+        console.error(`Failed to parse markdown!:`, err)
+      }
+      
+
+      break;
+  }
+  
+}
+
+function reset() {
+
+  //TODO reset timer, output fields and element visibility
+  // maybe add more constants instead of predefined HTML?
   
 }
 
