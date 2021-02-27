@@ -4,7 +4,7 @@
   "description": "A template for including TailwindCSS with basic html projects, using webpack",
   "private": true,
   "scripts": {
-    "watch": "webpack --config webpack.config.js --mode=development --watch",
+    "watch": "webpack --config webpack.config.js --mode=production --watch",
     "build": "export NODE_ENV=production || set NODE_ENV=production&& webpack --config webpack.config.js --mode=production"
   },
   "author": "Chaphasilor",

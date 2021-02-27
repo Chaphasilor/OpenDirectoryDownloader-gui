@@ -129,9 +129,9 @@ async function commandHandler(socketId, command) {
         console.log(`Scan finished.`)
         
         let newJsonPath = `/scans/${socketId}_${Date.now()}.json`
-        let newJsonPathAbsolute = `${__dirname}/public/static/${newJsonPath}`
+        let newJsonPathAbsolute = `${__dirname}/public/static${newJsonPath}`
         let newUrlPath = `/scans/${socketId}_${Date.now()}.txt`
-        let newUrlPathAbsolute = `${__dirname}/public/static/${newUrlPath}`
+        let newUrlPathAbsolute = `${__dirname}/public/static${newUrlPath}`
 
         try {
           fs.renameSync(scanResult.jsonFile, newJsonPathAbsolute)
