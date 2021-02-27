@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "cd public && npm run build"
+    "build": "cd public && npm i && npm run build"
   },
   "author": "Chaphasilor",
   "license": "GPL-3.0",
