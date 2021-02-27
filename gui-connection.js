@@ -15,7 +15,7 @@ module.exports = class GuiConnection extends EventEmitter {
     this.sockets = new Map()
 
     this.wss.on(`listening`, () => {
-      console.log(`Websocket server ready and listening`)
+      console.info(`Websocket server ready and listening`)
     })
     
     this.wss.on(`connection`, (socket, request) => {

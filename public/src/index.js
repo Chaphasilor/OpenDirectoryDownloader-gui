@@ -13,8 +13,10 @@ let statusField = document.querySelector(`#status`)
 let timeField = document.querySelector(`#time`)
 let output = document.querySelector(`#output`)
 let clipboardButton = document.querySelector(`#clipboard-button`)
+let jsonButton = document.querySelector(`#json-button`)
+let urlButton = document.querySelector(`#url-button`)
 
-const clipboardButtonText = `Copy Stats Table to Clipboard`
+const clipboardButtonText = `Copy Stats to Clipboard`
 
 urlForm.addEventListener(`submit`, performScan)
 
@@ -47,7 +49,7 @@ window.onload = function() {
 function handleScanUpdate(response) {
 
   console.log(`response:`, response)
-  statusField.innerText = response.status
+  statusField.innerText = capitalize(response.status)
   
   switch (response.status) {
     case `pending`:
@@ -56,6 +58,7 @@ function handleScanUpdate(response) {
       break;
 
     case `running`:
+      console.log(`Date.now():`, Date.now())
       startTime = Date.now()
       timeIntervalId = setInterval(() => {
         timeField.innerText = formatTime(startTime)
@@ -64,6 +67,7 @@ function handleScanUpdate(response) {
   
     default: // finished
 
+      console.log(`timeIntervalId:`, timeIntervalId)
       clearInterval(timeIntervalId)
       // output.innerText = JSON.stringify(response)
 
@@ -84,6 +88,15 @@ function handleScanUpdate(response) {
       } catch (err) {
         console.error(`Failed to parse markdown!:`, err)
       }
+
+      jsonButton.classList.remove(`hidden`)
+      jsonButton.addEventListener(`click`, () => {
+        downloadUrl(response.scanResult.jsonFile, `OD-Scan_${new URL(response.scanResult.scannedUrl).host}_${new Date().toISOString().substring(0, 10)}.json`)
+      })
+      urlButton.classList.remove(`hidden`)
+      urlButton.addEventListener(`click`, () => {
+        downloadUrl(response.scanResult.urlFile, `OD-Scan_${new URL(response.scanResult.scannedUrl).host}_${new Date().toISOString().substring(0, 10)}.txt`)
+      })
       
 
       break;
@@ -98,6 +111,15 @@ function reset() {
   
 }
 
+function downloadUrl(url, filename) {
+
+  let link = document.createElement(`a`)
+  link.setAttribute(`href`, url)
+  link.setAttribute(`download`, filename)
+  link.click()
+  
+}
+
 function formatTime(startTime){
   let updatedTime = new Date().getTime();
   let difference =  updatedTime - startTime;
@@ -108,6 +130,10 @@ function formatTime(startTime){
   minutes = (minutes < 10) ? `0` + minutes : minutes;
   seconds = (seconds < 10) ? `0` + seconds : seconds;
   return `${hours}:${minutes}:${seconds}`;
+}
+
+function capitalize(input) {
+  return input.split(` `).map(x => x[0].toUpperCase() + x.split(``).splice(1).join(``)).join(``)
 }
 
 

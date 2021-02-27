@@ -1,12 +1,12 @@
 const http = require(`http`)
 const https = require(`https`)
+const fs = require(`fs`)
 
 require(`dotenv`).config()
 const betterLogging = require(`better-logging`)
 betterLogging(console, {
   messageConstructionStrategy: betterLogging.MessageConstructionStrategy.FIRST,
 })
-const { log, info, error, trace, warn, debug, assert } = require(`console`)
 console.logLevel = process.env.environment === `development` ? 4 : 2
 const OpenDirectoryDownloader = require(`open-directory-downloader`)
 const Koa = require(`koa`)
@@ -107,24 +107,61 @@ async function commandHandler(socketId, command) {
           return;
         }
         
-        info(`Client '${socketId}' requested a scan of '${command[1]}'`)
-        info(`Starting scan of '${command[1]}'`)
-
-        clients.send(socketId, response({
-          status: `running`,
-          message: `Your scan is now running!`, 
-        }))
+        console.info(`Client '${socketId}' requested a scan of '${command[1]}'`)
+        console.info(`Starting scan of '${command[1]}'`)
 
         clients.send(socketId, response({
           status: `pending`,
           message: `Scan has been queued`,
         }))
+
+        clients.send(socketId, response({
+          status: `running`,
+          message: `The Open Directory is now being scanned`
+        }))
         
-        let scanResult = await ODD.scanUrl(command[1])
+        let scanResult = await ODD.scanUrl(command[1], {
+          keepJsonFile: true,
+          keepUrlFile: true,
+
+        })
+
+        console.log(`Scan finished.`)
         
-        // TODO add links to download urls file and json file
-        delete scanResult.jsonFile
-        delete scanResult.urlFile
+        let newJsonPath = `/scans/${socketId}_${Date.now()}.json`
+        let newJsonPathAbsolute = `${__dirname}/public/static/${newJsonPath}`
+        let newUrlPath = `/scans/${socketId}_${Date.now()}.txt`
+        let newUrlPathAbsolute = `${__dirname}/public/static/${newUrlPath}`
+
+        try {
+          fs.renameSync(scanResult.jsonFile, newJsonPathAbsolute)
+          scanResult.jsonFile = newJsonPath
+          setTimeout(() => {
+            try {
+              fs.unlinkSync(newJsonPathAbsolute)
+            } catch (err) {
+              console.warn(`Couldn't delete scan file:`, err)
+            }
+          }, 1000*60*process.env.MINUTES_TO_KEEP_SCAN_FILES)
+        } catch (err) {
+          console.error(`Failed to move scan files:`, err)
+          delete scanResult.jsonFile
+        }
+
+        try {
+          fs.renameSync(scanResult.urlFile, newUrlPathAbsolute)
+          scanResult.urlFile = newUrlPath
+          setTimeout(() => {
+            try {
+              fs.unlinkSync(newUrlPathAbsolute)
+            } catch (err) {
+              console.warn(`Couldn't delete scan file:`, err)
+            }
+          }, 1000*60*process.env.MINUTES_TO_KEEP_SCAN_FILES)
+        } catch (err) {
+          console.error(`Failed to move scan files:`, err)
+          delete scanResult.urlFile
+        }
         
         clients.send(socketId, response({
           status: `finished`,
