@@ -1,5 +1,4 @@
 /.env
 /node_modules
 public/node_modules
-public/static/scans/
 public/static/webpack/
