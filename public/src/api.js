@@ -87,7 +87,7 @@ export default class API extends EventTarget {
 
   }
 
-  async sendCommand(command, payload, responseHandler) {
+  async sendCommand(command, payload, responseHandler, errorHandler) {
     
     if (!this.connected) {
 
@@ -109,6 +109,7 @@ export default class API extends EventTarget {
     this.activeCommands.push({
       name: command,
       handler: responseHandler,
+      errorHandler: errorHandler,
     })
 
     this.socket.onmessage = (message) => {
@@ -133,7 +134,10 @@ export default class API extends EventTarget {
       
         case `error`:
           console.error(`Command '${parsed.value[0]}' threw an error:`, parsed.value[1])
-          //TODO add error handler
+          command.errorHandler({
+            reason: parsed.value[1],
+            additionalPayload: parsed.value.length > 2 ? parsed.value[2] : undefined,
+          })
           break;
       
         default:
@@ -152,8 +156,11 @@ export default class API extends EventTarget {
       (response) => {
 
         this.emit(`scanUpdate`, response)
-        console.log(`response:`, response);
 
+      },
+      (err) => {
+        console.log(`err:`, err)
+        this.emit(`scanError`, err)
       }
     )
     

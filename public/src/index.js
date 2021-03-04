@@ -20,9 +20,10 @@ const clipboardButtonText = `Copy Stats to Clipboard`
 
 urlForm.addEventListener(`submit`, performScan)
 
-function performScan() {
+async function performScan() {
 
-  api.scanUrl(urlInput.value)
+  await api.scanUrl(urlInput.value)
+  clearInterval(timeIntervalId)
   
 }
 
@@ -43,6 +44,7 @@ window.onload = function() {
   })
   
   api.on(`scanUpdate`, handleScanUpdate)
+  api.on(`scanError`, handleScanError)
   
 }
 
@@ -101,6 +103,22 @@ function handleScanUpdate(response) {
 
       break;
   }
+  
+}
+
+function handleScanError(err) {
+
+  
+  clearInterval(timeIntervalId)
+
+  statusField.innerText = `Error`
+  output.innerText = `\
+An error occurred while scanning the Open Directory!
+Reason: ${err.reason}
+Additional Info:
+${err.additionalPayload}
+  `
+  output.classList.remove(`hidden`)
   
 }
 

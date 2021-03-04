@@ -120,13 +120,17 @@ async function commandHandler(socketId, command) {
           message: `The Open Directory is now being scanned`
         }))
         
-        let scanResult = await ODD.scanUrl(command[1], {
-          keepJsonFile: true,
-          keepUrlFile: true,
-
-        })
-
-        console.log(`Scan finished.`)
+        let scanResult
+        try {
+          scanResult = await ODD.scanUrl(command[1], {
+            keepJsonFile: true,
+            keepUrlFile: true,
+  
+          })
+          console.log(`Scan finished.`)
+        } catch (err) {
+          throw err
+        }
         
         let newJsonPath = `/scans/${socketId}_${Date.now()}.json`
         let newJsonPathAbsolute = `${__dirname}/public/static${newJsonPath}`
@@ -172,7 +176,6 @@ async function commandHandler(socketId, command) {
       } catch (err) {
         error(`Error while scanning the URL:`, err)
         clients.send(socketId, error(err[0], err[1]))
-        clients.send(socketId, end())
       }
       break;
   
