@@ -65,7 +65,7 @@ module.exports = {
               postcssOptions: {
                 ident: 'postcss',
                 plugins: [
-                  require('tailwindcss'),
+                  require('@tailwindcss/jit'),
                   require('autoprefixer'),
                   require('cssnano')({
                     preset: `default`,

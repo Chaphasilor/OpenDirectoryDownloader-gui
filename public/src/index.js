@@ -9,6 +9,16 @@ let api
 
 let urlForm = document.querySelector(`#url-form`)
 let urlInput = document.querySelector(`#url`)
+let advancedOptionInputs = {
+  speedtest: document.querySelector(`#speedtest-checkbox`),
+  fastScan: document.querySelector(`#fastScan-checkbox`),
+  uploadUrlFile: document.querySelector(`#uploadUrlFile-checkbox`),
+  exactSizes: document.querySelector(`#exactSizes-checkbox`),
+  auth: {
+    username: document.querySelector(`#username-textfield`),
+    password: document.querySelector(`#password-textfield`),
+  }
+}
 let statusField = document.querySelector(`#status`)
 let timeField = document.querySelector(`#time`)
 let output = document.querySelector(`#output`)
@@ -22,7 +32,24 @@ urlForm.addEventListener(`submit`, performScan)
 
 async function performScan() {
 
-  await api.scanUrl(urlInput.value)
+  let advancedOptions = {
+    speedtest: advancedOptionInputs.speedtest.checked,
+    fastScan: advancedOptionInputs.fastScan.checked,
+    uploadUrlFile: advancedOptionInputs.uploadUrlFile.checked,
+    exactSizes: advancedOptionInputs.exactSizes.checked,
+  }
+
+  advancedOptions.auth = {}
+  
+  if (advancedOptionInputs.auth.username.value !== ``) {
+    advancedOptions.auth.username = advancedOptionInputs.auth.username.value
+  }
+  
+  if (advancedOptionInputs.auth.password.value !== ``) {
+    advancedOptions.auth.password = advancedOptionInputs.auth.password.value
+  }
+  
+  await api.scanUrl(urlInput.value, advancedOptions)
   clearInterval(timeIntervalId)
   
 }
@@ -115,8 +142,7 @@ function handleScanError(err) {
   output.innerText = `\
 An error occurred while scanning the Open Directory!
 Reason: ${err.reason}
-Additional Info:
-${err.additionalPayload}
+${err.additionalPayload ? `Additional Info: ${err.additionalPayload}` : ``}
   `
   output.classList.remove(`hidden`)
   

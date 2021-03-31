@@ -8,7 +8,7 @@ betterLogging(console, {
   messageConstructionStrategy: betterLogging.MessageConstructionStrategy.FIRST,
 })
 console.logLevel = process.env.environment === `development` ? 4 : 2
-const OpenDirectoryDownloader = require(`open-directory-downloader`)
+const odd = require(`open-directory-downloader`)
 const Koa = require(`koa`)
 const router = require(`@koa/router`)()
 const cors = require(`@koa/cors`)
@@ -46,7 +46,7 @@ app.use(bodyParser())
 let server = http.createServer(app.callback())
 server.listen(process.env.PORT)
 
-const ODD = new OpenDirectoryDownloader()
+const indexer = new odd.OpenDirectoryDownloader()
 const clients = new GuiConnection(server)
 
 app.use(router.routes());
@@ -95,19 +95,27 @@ async function commandHandler(socketId, command) {
     case `scan`:
       try {
 
+        let url = command[1]
+        let advancedOptions
+
         try {
-          if (!(new URL(command[1]))) {
-            clients.send(socketId, error(`Parameter 'url' is not a valid URL!`))
-            clients.send(socketId, end())
-            return;
-          }
+          checkUrlValid(url)
         } catch (err) {
-          clients.send(socketId, error(`Parameter 'url' is not a valid URL!`))
+          clients.send(socketId, error(err.message))
+          clients.send(socketId, end())
+          return;
+        }
+        
+        try {
+          advancedOptions = parseAdvancedOptions(command[2])
+        } catch (err) {
+          clients.send(socketId, error(err.message))
           clients.send(socketId, end())
           return;
         }
         
         console.info(`Client '${socketId}' requested a scan of '${command[1]}'`)
+        
         console.info(`Starting scan of '${command[1]}'`)
 
         clients.send(socketId, response({
@@ -122,14 +130,26 @@ async function commandHandler(socketId, command) {
         
         let scanResult
         try {
-          scanResult = await ODD.scanUrl(command[1], {
+          scanResult = await indexer.scanUrl(command[1], {
             keepJsonFile: true,
             keepUrlFile: true,
-  
+            ...advancedOptions,
           })
           console.log(`Scan finished.`)
         } catch (err) {
-          throw err
+
+          if (err instanceof odd.ODDError) {
+
+            if (err.message.includes(`didn't find any files or directories`)) {
+              clients.send(socketId, error(err.message))
+              clients.send(socketId, end())
+              return;
+            }
+            
+          } else {
+            throw err
+          }
+          
         }
         
         let newJsonPath = `/scans/${socketId}_${Date.now()}.json`
@@ -182,5 +202,49 @@ async function commandHandler(socketId, command) {
     default:
       break;
   }
+  
+}
+
+function checkUrlValid(url) {
+
+  try {
+    if (!(new URL(url))) {
+      throw new Error(`Parameter 'url' is not a valid URL!`)
+    }
+  } catch (err) {
+    throw new Error(`Parameter 'url' is not a valid URL!`)
+  }
+  
+}
+
+function parseAdvancedOptions(rawOptions) {
+
+  let parsedOptions = {}
+
+  if (rawOptions) {
+
+    try {
+      rawOptions = JSON.parse(JSON.stringify(rawOptions))
+    } catch (err) {
+      throw new Error(`Advanced options are not a valid object!`)
+    }
+    
+    if (typeof rawOptions !== `object`) {
+      throw new Error(`Advanced options are not a valid object!`)
+    }
+
+    parsedOptions.performSpeedtest = rawOptions.speedtest === undefined ? false : rawOptions.speedtest
+    parsedOptions.uploadUrlFile = rawOptions.uploadUrlFile === undefined ? false : rawOptions.uploadUrlFile
+    parsedOptions.fastScan = rawOptions.fastScan === undefined ? true : rawOptions.fastScan
+    parsedOptions.exactSizes = rawOptions.exactSizes === undefined ? false : rawOptions.exactSizes
+    parsedOptions.userAgent = rawOptions.userAgent
+    parsedOptions.auth = {
+      username: rawOptions.auth?.username,
+      password: rawOptions.auth?.password,
+    }
+    
+  }
+
+  return parsedOptions
   
 }

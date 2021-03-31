@@ -149,10 +149,10 @@ export default class API extends EventTarget {
 
   }
   
-  async scanUrl(url) {
+  async scanUrl(url, advancedOptions) {
 
     await this.sendCommand(`scan`,
-      [url],
+      [url, advancedOptions],
       (response) => {
 
         this.emit(`scanUpdate`, response)
