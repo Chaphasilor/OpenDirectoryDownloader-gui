@@ -33,6 +33,13 @@ const GuiConnection = require(`./gui-connection`)
 
 const app = new Koa()
 app.use(cors())
+app.use(async (context, next) => {
+  if (context.method === `GET` && context.path === `/keepalive`) {
+    context.status = 201
+    context.body = `Ha, ha, ha, ha\nStayin' alive, stayin' alive`
+  }
+  await next() // ALWAYS use `await` with next, to wait for other middlewares before sending the response
+})
 app.use(static(`./public/static`));
 app.use(compress({
   br: {

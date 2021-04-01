@@ -3,3 +3,4 @@
 public/node_modules
 public/static/webpack/
 public/static/scans/
+.vscode/

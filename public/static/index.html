@@ -18,7 +18,7 @@
   <h1 class="mt-6 mb-10 text-3xl text-center">OpenDirectoryDownloader</h1>
 
   <main
-    class="px-6 xl:px-96 lg:px-54 md:px-32"
+    class="px-6 mb-32 xl:px-96 lg:px-54 md:px-32"
   >
     
       <form
@@ -29,7 +29,7 @@
         onsubmit="event.preventDefault();"
       >
         <input
-          class="w-full p-2 bg-transparent border border-gray-200 rounded-md"
+          class="w-full h-12 p-2 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 focus:m-0"
           type="text"
           name="url"
           placeholder="URL to scan"
@@ -42,7 +42,7 @@
           <div 
             class="flex flex-col w-64 mx-4"
           >
-            <input class="w-8 h-8 mx-auto border border-white rounded-md checked:" type="checkbox" name="speedtest" id="speedtest-checkbox" checked>
+            <input class="w-8 h-8 mx-auto text-blue-600 border border-white rounded-md cursor-pointer hover:bg-warmgray-600" type="checkbox" name="speedtest" id="speedtest-checkbox" checked>
             <label
               class=""
               for="speedtest-checkbox"
@@ -52,7 +52,7 @@
           <div 
             class="flex flex-col w-64 mx-4"
           >
-            <input class="w-8 h-8 mx-auto border border-white rounded-md " type="checkbox" name="fastScan" id="fastScan-checkbox" checked>
+            <input class="w-8 h-8 mx-auto text-blue-600 border border-white rounded-md cursor-pointer hover:bg-warmgray-600" type="checkbox" name="fastScan" id="fastScan-checkbox" checked>
             <label
               class=""
               for="fastScan-checkbox"
@@ -62,7 +62,7 @@
           <div 
             class="flex flex-col w-64 mx-4"
           >
-            <input class="w-8 h-8 mx-auto border border-white rounded-md " type="checkbox" name="uploadUrlFile" id="uploadUrlFile-checkbox">
+            <input class="w-8 h-8 mx-auto text-blue-600 border border-white rounded-md cursor-pointer hover:bg-warmgray-600" type="checkbox" name="uploadUrlFile" id="uploadUrlFile-checkbox">
             <label
               class=""
               el for="uploadUrlFile-
@@ -72,7 +72,7 @@
           <div 
             class="flex flex-col w-64 mx-4"
           >
-            <input class="w-8 h-8 mx-auto border border-white rounded-md " type="checkbox" name="exactSizes" id="exactSizes-checkbox">
+            <input class="w-8 h-8 mx-auto text-blue-600 border border-white rounded-md cursor-pointer hover:bg-warmgray-600" type="checkbox" name="exactSizes" id="exactSizes-checkbox">
             <label
               class=""
               for="exactSizes-checkbox"
@@ -96,7 +96,7 @@
               for="exactSizes-checkbox"
             >User Name:</label>
             <input
-              class="w-32 h-8 p-1 bg-transparent border border-gray-200 rounded-md"
+              class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 focus:m-0"
               type="text"
               name="username"
               id="username-textfield"
@@ -111,7 +111,7 @@
               for="exactSizes-checkbox"
             >Password:</label>
             <input
-              class="w-32 h-8 p-1 bg-transparent border border-gray-200 rounded-md"
+              class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 focus:m-0"
               type="text"
               name="exactSizes"
               id="password-textfield"
@@ -122,7 +122,7 @@
     
     
         <button
-          class="p-2 px-8 mx-auto text-xl border-2 border-gray-200 rounded-md w-52 h-14 hover:bg-warmGray-600"
+          class="p-2 px-8 mx-auto text-xl border-2 border-gray-200 rounded-md focus:outline-none w-52 h-14 hover:bg-warmGray-600 focus:ring-0 focus:border-blue-600 focus:border-2"
           type="submit"
         >Scan!</button>
         
@@ -159,7 +159,7 @@
     
       <div
         id="output"
-        class="hidden w-full h-auto p-2 mx-auto overflow-x-auto prose text-white break-all bg-transparent border border-gray-200 rounded-md prose-dark place-self-center"
+        class="hidden w-full h-auto p-2 mb-6 prose text-white break-all bg-transparent border border-gray-200 rounded-md prose-dark max-w-none"
       ></div>
     
       <div
@@ -168,17 +168,17 @@
       
         <button
           id="json-button"
-          class="hidden w-64 h-20 p-2 px-8 m-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+          class="hidden w-64 h-20 p-2 px-8 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
           >
           Download JSON-File
         </button>
         <button
           id="clipboard-button"
-          class="hidden w-64 h-20 p-2 px-8 m-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+          class="hidden w-64 h-20 p-2 px-8 mx-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
         ></button>
         <button
           id="url-button"
-          class="hidden w-64 h-20 p-2 px-8 m-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+          class="hidden w-64 h-20 p-2 px-8 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
         >
           Download URL-List
         </button>

@@ -82,6 +82,7 @@ module.exports = {
   variants: {
     extend: {
       typography: ['dark'],
+      borderWidth: ['focus'],
     },
   },
   plugins: [

@@ -180,6 +180,10 @@ function capitalize(input) {
   return input.split(` `).map(x => x[0].toUpperCase() + x.split(``).splice(1).join(``)).join(``)
 }
 
+setInterval(() => {
+  fetch(`/keepalive`)
+}, 1000*60*5)
+
 
 // !! IMPORTANT: !!
 // Webpack doesn't automatically assing global variables to the window context when importing the bundle
