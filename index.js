@@ -33,9 +33,9 @@ const GuiConnection = require(`./gui-connection`)
 //   console.log(`Listening on ${protocol}://${address}:${port}...`);
 
 const app = new Koa()
-if (process.env.environment !== `development`) {
-  app.use(forceHTTPS());
-}
+// if (process.env.environment !== `development`) {
+//   app.use(forceHTTPS());
+// }
 app.use(cors())
 app.use(async (context, next) => {
   if (context.method === `GET` && context.path === `/keepalive`) {
