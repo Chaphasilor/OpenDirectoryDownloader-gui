@@ -143,7 +143,7 @@ export default class API extends EventTarget {
    * @param {Object} payload the payload to send alongside the command
    * @param {Function} responseHandler a callback for handling responses *to this command only*
    */
-  async sendCommand(command, payload, responseHandler) {
+  async sendCommand(command, payload, responseHandler, errorHandler) {
     
     // make sure we are connected to the backend API
     if (!this.connected) {
@@ -169,6 +169,7 @@ export default class API extends EventTarget {
     this.activeCommands.push({
       name: command,
       handler: responseHandler,
+      errorHandler: errorHandler,
     })
 
     // handle responses by the server
@@ -182,8 +183,7 @@ export default class API extends EventTarget {
   
       // if the command isn't part of `this.activeCommands`, ignore it
       if (!command) {
-        console.warn(`Command not found: ${parsed.value[0]}`)
-        return
+        throw new Error(`Command not found: ${command}`)
       }
   
       // detect the type of the reply and handle accordingly
@@ -198,9 +198,12 @@ export default class API extends EventTarget {
           break;
       
         case `error`:
-          // if the reply is an error, log it in the console
-          // the command hasn't ended yet
-          console.warn(`Command '${parsed.value[0]}' threw an error:`, parsed.value[1])
+          // error ocurred, but command hasn't ended yet
+          console.error(`Command '${parsed.value[0]}' threw an error:`, parsed.value[1])
+          command.errorHandler({
+            reason: parsed.value[1],
+            additionalPayload: parsed.value.length > 2 ? parsed.value[2] : undefined,
+          })
           break;
       
         default:

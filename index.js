@@ -53,7 +53,9 @@ app.use(bodyParser())
 let server = http.createServer(app.callback())
 server.listen(process.env.PORT)
 
-const indexer = new odd.OpenDirectoryDownloader()
+const indexer = new odd.OpenDirectoryDownloader({
+  maximumMemory: process.env.MAX_MEMORY
+})
 const clients = new GuiConnection(server)
 
 app.use(router.routes());
@@ -145,13 +147,21 @@ async function commandHandler(socketId, command) {
           console.log(`Scan finished.`)
         } catch (err) {
 
-          if (err instanceof odd.ODDError) {
+          console.warn(`Indexer threw an error:`, err)
+
+          if (err[0] instanceof odd.ODDError) {
 
             if (err.message.includes(`didn't find any files or directories`)) {
               clients.send(socketId, error(err.message))
               clients.send(socketId, end())
               return;
             }
+            
+          } else if (err[0] instanceof odd.ODDOutOfMemoryError) {
+
+            clients.send(socketId, error(`Server ran out of memory!`))
+            clients.send(socketId, end())
+            return;
             
           } else {
             throw err

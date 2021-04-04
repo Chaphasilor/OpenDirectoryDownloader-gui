@@ -108,11 +108,18 @@ function handleScanUpdate(response) {
 
         clipboardButton.innerText = clipboardButtonText
         clipboardButton.classList.remove(`hidden`)
-        clipboardButton.addEventListener(`click`, () => {
-          navigator.clipboard.writeText(response.scanResult.reddit);
-          clipboardButton.innerText = `Copied Successfully!`
-          setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500  )
-        })
+
+        if (!navigator.clipboard) {
+          clipboardButton.disabled = true
+          clipboardButton.title = `Copying to clipboard is not available!`
+        } else {
+          clipboardButton.addEventListener(`click`, () => {
+            navigator.clipboard.writeText(response.scanResult.reddit);
+            clipboardButton.innerText = `Copied Successfully!`
+            setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500  )
+          })
+        }
+        
           
       } catch (err) {
         console.error(`Failed to parse markdown!:`, err)

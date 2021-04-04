@@ -81,6 +81,9 @@ module.exports = {
   },
   variants: {
     extend: {
+      textColor: ['disabled'],
+      cursor: ['disabled'],
+      borderColor: ['disabled'],
       typography: ['dark'],
       borderWidth: ['focus'],
     },

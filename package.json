@@ -20,7 +20,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-compress": "^5.0.1",
     "koa-static": "^5.0.0",
-    "open-directory-downloader": "^3.1.2",
+    "open-directory-downloader": "^4.0.0",
     "uuid": "^8.3.2",
     "ws": "^7.4.3"
   },
