@@ -11,6 +11,7 @@ console.logLevel = process.env.environment === `development` ? 4 : 2
 const odd = require(`open-directory-downloader`)
 const Koa = require(`koa`)
 const router = require(`@koa/router`)()
+const forceHTTPS = require('koa-force-https');
 const cors = require(`@koa/cors`)
 const static = require('koa-static')
 const compress = require('koa-compress')
@@ -32,6 +33,9 @@ const GuiConnection = require(`./gui-connection`)
 //   console.log(`Listening on ${protocol}://${address}:${port}...`);
 
 const app = new Koa()
+if (process.env.environment !== `development`) {
+  app.use(forceHTTPS());
+}
 app.use(cors())
 app.use(async (context, next) => {
   if (context.method === `GET` && context.path === `/keepalive`) {

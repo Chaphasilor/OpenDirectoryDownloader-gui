@@ -19,6 +19,7 @@
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa-compress": "^5.0.1",
+    "koa-force-https": "^2.0.1",
     "koa-static": "^5.0.0",
     "open-directory-downloader": "^4.0.1",
     "uuid": "^8.3.2",
