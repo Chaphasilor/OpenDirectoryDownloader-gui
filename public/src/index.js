@@ -176,6 +176,8 @@ function handleScanUpdate(response) {
 
 function handleScanError(err) {
 
+  // hide notification card
+  notificationCard.classList.add(`hidden`) // adding the class multiple times is fine
   
   clearInterval(timeIntervalId)
 
