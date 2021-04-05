@@ -155,13 +155,17 @@ async function commandHandler(socketId, command) {
 
           if (err[0] instanceof odd.ODDError) {
 
-            if (err.message.includes(`didn't find any files or directories`)) {
-              clients.send(socketId, error(err.message))
+            console.info(`Type of error is 'ODDError'`)
+
+            if (err[0].message.includes(`didn't find any files or directories`)) {
+              clients.send(socketId, error(err[0].message))
               clients.send(socketId, end())
               return;
             }
             
           } else if (err[0] instanceof odd.ODDOutOfMemoryError) {
+
+            console.info(`Type of error is 'ODDOutOfMemoryError'`)
 
             clients.send(socketId, error(`Server ran out of memory!`))
             clients.send(socketId, end())
@@ -215,8 +219,11 @@ async function commandHandler(socketId, command) {
         clients.send(socketId, end())
         
       } catch (err) {
+
+        console.error(`Unknown error ocurred:`, err)
         error(`Error while scanning the URL:`, err)
-        clients.send(socketId, error(err[0], err[1]))
+        clients.send(socketId, error(err[0]?.message, err[1]))
+
       }
       break;
   
