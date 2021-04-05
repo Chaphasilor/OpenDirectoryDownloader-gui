@@ -86,7 +86,7 @@ export default class API extends EventTarget {
         // overwrite the previous onclose-handler after the socket is connected
         this.socket.onclose = (event) => {
           clearInterval(this.pingIntervalId) // clear keep-alive interval
-          alert(`Lost connection to server! (Code: '${event.code}', Reason: '${event.reason}')`)
+          alert(`Lost connection to server! Please restart the scan.`)
         }
         
       }

@@ -7,9 +7,9 @@ import marked from 'marked'
 
 let api
 
-let urlForm = document.querySelector(`#url-form`)
-let urlInput = document.querySelector(`#url`)
-let advancedOptionInputs = {
+const urlForm = document.querySelector(`#url-form`)
+const urlInput = document.querySelector(`#url`)
+const advancedOptionInputs = {
   speedtest: document.querySelector(`#speedtest-checkbox`),
   fastScan: document.querySelector(`#fastScan-checkbox`),
   uploadUrlFile: document.querySelector(`#uploadUrlFile-checkbox`),
@@ -19,12 +19,17 @@ let advancedOptionInputs = {
     password: document.querySelector(`#password-textfield`),
   }
 }
-let statusField = document.querySelector(`#status`)
-let timeField = document.querySelector(`#time`)
-let output = document.querySelector(`#output`)
-let clipboardButton = document.querySelector(`#clipboard-button`)
-let jsonButton = document.querySelector(`#json-button`)
+const statusField = document.querySelector(`#status`)
+const timeField = document.querySelector(`#time`)
+const output = document.querySelector(`#output`)
+const clipboardButton = document.querySelector(`#clipboard-button`)
+const jsonButton = document.querySelector(`#json-button`)
 let urlButton = document.querySelector(`#url-button`)
+
+const notificationCard = document.querySelector(`#notification-card`)
+const notificationCardButton = document.querySelector(`#notification-card-button`)
+const notificationCardDismissButton = document.querySelector(`#notification-card-dismiss-button`)
+const notificationCardOutput = document.querySelector(`#notification-card-output`)
 
 const clipboardButtonText = `Copy Stats to Clipboard`
 
@@ -84,6 +89,10 @@ function handleScanUpdate(response) {
     case `pending`:
       console.info(response.message)
       output.innerText = response.message
+
+      if (`Notification` in window && Notification.permission === `default`) { // not granted, not denied
+        showNotificationCard();
+      }
       break;
 
     case `running`:
@@ -119,12 +128,12 @@ function handleScanUpdate(response) {
             setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500  )
           })
         }
-        
-          
+
       } catch (err) {
         console.error(`Failed to parse markdown!:`, err)
       }
 
+      // show buttons
       jsonButton.classList.remove(`hidden`)
       jsonButton.addEventListener(`click`, () => {
         downloadUrl(response.scanResult.jsonFile, `OD-Scan_${new URL(response.scanResult.scannedUrl).host}_${new Date().toISOString().substring(0, 10)}.json`)
@@ -134,6 +143,31 @@ function handleScanUpdate(response) {
         downloadUrl(response.scanResult.urlFile, `OD-Scan_${new URL(response.scanResult.scannedUrl).host}_${new Date().toISOString().substring(0, 10)}.txt`)
       })
       
+      // hide notification card
+      notificationCard.classList.add(`hidden`) // adding the class multiple times is fine
+      // show notification if page is in background
+      if (Notification.permission === `granted` && document.visibilityState !== `visible`) {
+
+        console.log(`Showing notification...`)
+        let notification = new Notification(`Scan is done!`, {
+          lang: `en-US`,
+          body: `The scan of '${urlInput.value}' is finished, click to see the results!`,
+          tag: urlInput.value, //TODO make the tag more unique or remember the scanned url somewhere
+          renotify: true,
+        })
+
+        notification.addEventListener(`click`, () => {
+          // not sure if I want to do something special here...
+        })
+
+        document.addEventListener(`visibilitychange`, function() {
+          if (document.visibilityState === `visible`) {
+            // The tab has become visible so clear the now-stale Notification.
+            notification.close();
+          }
+        });
+        
+      }
 
       break;
   }
@@ -169,6 +203,30 @@ function downloadUrl(url, filename) {
   link.setAttribute(`download`, filename)
   link.click()
   
+}
+
+function showNotificationCard() {
+
+  notificationCardOutput.textContent = ``
+  notificationCard.classList.remove(`hidden`)
+
+  notificationCardDismissButton.addEventListener(`click`, () => {
+    notificationCard.classList.add(`hidden`)
+  })
+  
+  notificationCardButton.addEventListener(`click`, async () => {
+
+    const permission = await Notification.requestPermission()
+    console.info(`Notification permission status:`, permission)
+
+    if ([`granted`, `denied`].includes(permission)) {
+      notificationCard.classList.add(`hidden`)
+    } else {
+      notificationCardOutput = `Sorry, something went wrong. Please try that again.`
+    }
+    
+  })
+
 }
 
 function formatTime(startTime){

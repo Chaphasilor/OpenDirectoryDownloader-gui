@@ -154,8 +154,47 @@
               <span id="time">Not yet started</span>
             </div>
         </div>
-    
+
       </div>
+
+      <div
+          class="relative hidden px-6 pt-12 pb-1 mx-auto text-center text-white bg-green-600 w-80 rounded-xl"
+          id="notification-card"
+        >
+
+          <button
+            class="absolute top-0 right-0 w-8 h-8 m-2"
+            id="notification-card-dismiss-button"
+          >
+            <svg
+              class="text-white stroke-current icon icon-tabler icon-tabler-x"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        
+          If you would like to receive a notification once the scan is done,<br>you'll need to click the button below.
+
+          <button
+            class="p-2 mx-auto my-4 text-xl border-2 border-gray-200 rounded-md focus:outline-none w-52 h-14 hover:bg-green-500 focus:ring-0 focus:border-blue-600 focus:border-2"
+            id="notification-card-button"
+          >
+            Enable Notifications
+          </button>
+
+          <span
+            class=""
+            id="notification-card-output"
+          ></span>
+          
+        </div>
     
       <div
         id="output"
