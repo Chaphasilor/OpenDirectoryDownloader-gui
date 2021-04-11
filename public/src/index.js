@@ -14,6 +14,7 @@ const advancedOptionInputs = {
   fastScan: document.querySelector(`#fastScan-checkbox`),
   uploadUrlFile: document.querySelector(`#uploadUrlFile-checkbox`),
   exactSizes: document.querySelector(`#exactSizes-checkbox`),
+  uploadScan: document.querySelector(`#uploadScan-checkbox`),
   auth: {
     username: document.querySelector(`#username-textfield`),
     password: document.querySelector(`#password-textfield`),
@@ -42,6 +43,7 @@ async function performScan() {
     fastScan: advancedOptionInputs.fastScan.checked,
     uploadUrlFile: advancedOptionInputs.uploadUrlFile.checked,
     exactSizes: advancedOptionInputs.exactSizes.checked,
+    uploadScan: advancedOptionInputs.uploadScan.checked,
   }
 
   advancedOptions.auth = {}

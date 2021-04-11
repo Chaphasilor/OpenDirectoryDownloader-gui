@@ -16,7 +16,9 @@ const cors = require(`@koa/cors`)
 const static = require('koa-static')
 const compress = require('koa-compress')
 const bodyParser = require(`koa-bodyparser`)
+
 const GuiConnection = require(`./gui-connection`)
+const util = require(`./util`)
 
 
 // // Listen
@@ -110,6 +112,7 @@ async function commandHandler(socketId, command) {
 
         let url = command[1]
         let advancedOptions
+        let otherOptions
 
         try {
           checkUrlValid(url)
@@ -120,7 +123,9 @@ async function commandHandler(socketId, command) {
         }
         
         try {
-          advancedOptions = parseAdvancedOptions(command[2])
+          const parsedOptions = parseAdvancedOptions(command[2])
+          oddOptions = parsedOptions.parsedOptionsODD
+          otherOptions = parsedOptions.parsedOptionsOther
         } catch (err) {
           clients.send(socketId, error(err.message))
           clients.send(socketId, end())
@@ -146,7 +151,7 @@ async function commandHandler(socketId, command) {
           scanResult = await indexer.scanUrl(command[1], {
             keepJsonFile: true,
             keepUrlFile: true,
-            ...advancedOptions,
+            ...oddOptions,
           })
           console.log(`Scan finished.`)
         } catch (err) {
@@ -217,6 +222,14 @@ async function commandHandler(socketId, command) {
           scanResult,
         }))
         clients.send(socketId, end())
+
+        // upload scan if option enabled
+        if (otherOptions.uploadScan) {
+          util.uploadScan(newJsonPathAbsolute)
+          .catch(err => {
+            console.warn(err)
+          })
+        }
         
       } catch (err) {
 
@@ -247,7 +260,8 @@ function checkUrlValid(url) {
 
 function parseAdvancedOptions(rawOptions) {
 
-  let parsedOptions = {}
+  let parsedOptionsODD = {}
+  let parsedOptionsOther = {}
 
   if (rawOptions) {
 
@@ -261,18 +275,20 @@ function parseAdvancedOptions(rawOptions) {
       throw new Error(`Advanced options are not a valid object!`)
     }
 
-    parsedOptions.performSpeedtest = rawOptions.speedtest === undefined ? false : rawOptions.speedtest
-    parsedOptions.uploadUrlFile = rawOptions.uploadUrlFile === undefined ? false : rawOptions.uploadUrlFile
-    parsedOptions.fastScan = rawOptions.fastScan === undefined ? true : rawOptions.fastScan
-    parsedOptions.exactSizes = rawOptions.exactSizes === undefined ? false : rawOptions.exactSizes
-    parsedOptions.userAgent = rawOptions.userAgent
-    parsedOptions.auth = {
+    parsedOptionsODD.performSpeedtest = rawOptions.speedtest === undefined ? false : rawOptions.speedtest
+    parsedOptionsODD.uploadUrlFile = rawOptions.uploadUrlFile === undefined ? false : rawOptions.uploadUrlFile
+    parsedOptionsODD.fastScan = rawOptions.fastScan === undefined ? true : rawOptions.fastScan
+    parsedOptionsODD.exactSizes = rawOptions.exactSizes === undefined ? false : rawOptions.exactSizes
+    parsedOptionsODD.userAgent = rawOptions.userAgent
+    parsedOptionsODD.auth = {
       username: rawOptions.auth?.username,
       password: rawOptions.auth?.password,
     }
+
+    parsedOptionsOther.uploadScan = rawOptions.exactSizes === undefined ? false : rawOptions.uploadScan
     
   }
 
-  return parsedOptions
+  return { parsedOptionsODD, parsedOptionsOther }
   
 }
