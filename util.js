@@ -40,7 +40,7 @@ module.exports.uploadScan = async function uploadScan(scanPath) {
   }
 
   if (res.ok && jsonResponse.ok) {
-    console.log(`Scan uploaded successfully! Path: ${jsonResponse.path}`);
+    console.info(`Scan uploaded successfully! Path: ${jsonResponse.path}`);
   } else {
     throw new Error(`Failed to upload scan: ${jsonResponse.error}`)
   }
