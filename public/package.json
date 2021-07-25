@@ -5,9 +5,9 @@
   "author": "Chaphasilor",
   "license": "GPL-3.0",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "serve": "vite preview --host"
+    "dev": "npx vite --host",
+    "build": "npx vite build",
+    "serve": "npx vite preview --host"
   },
   "devDependencies": {
     "autoprefixer": "^10.3.1",
