@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="favicon.svg"
+    >
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    >
+    <title>OpenDirectorDownloader Web Version</title>
+  </head>
+
+  <body class="text-gray-200 bg-warmgray-800">
+    <h1 class="mt-6 mb-10 text-3xl text-center">OpenDirectoryDownloader</h1>
+    <main class="px-6 mb-32 xl:px-56 lg:px-48 md:px-32">
+      <form
+        class="flex flex-col w-full m-auto mb-12 text-center"
+        id="url-form"
+        action="/scan"
+        method="POST"
+        onsubmit="event.preventDefault();"
+      >
+        <input
+          class="w-full h-12 p-2 m-1 bg-transparent border-2 border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2 focus:m-1"
+          type="text"
+          name="url"
+          placeholder="URL to scan"
+          id="url"
+        >
+        <fieldset class="flex flex-col w-full p-4 md:flex-row md:flex-wrap md:justify-center">
+          <div class="flex flex-row px-4 mx-4 my-2 md:flex-col">
+            <input
+              class="w-8 h-8 text-blue-600 border border-white rounded-md cursor-pointer md:mx-auto hover:bg-warmgray-600"
+              type="checkbox"
+              name="speedtest"
+              id="speedtest-checkbox"
+              checked
+            >
+            <label
+              class="ml-4 leading-7 md:ml-0"
+              for="speedtest-checkbox"
+            >Perform Speedtest?</label>
+          </div>
+          <div class="flex flex-row px-4 mx-4 my-2 md:flex-col">
+            <input
+              class="w-8 h-8 text-blue-600 border border-white rounded-md cursor-pointer md:mx-auto hover:bg-warmgray-600"
+              type="checkbox"
+              name="fastScan"
+              id="fastScan-checkbox"
+              checked
+            >
+            <label
+              class="ml-4 leading-7 md:ml-0"
+              for="fastScan-checkbox"
+            >Fast Scan?</label>
+          </div>
+          <div class="flex flex-row px-4 mx-4 my-2 md:flex-col">
+            <input
+              class="w-8 h-8 text-blue-600 border border-white rounded-md cursor-pointer md:mx-auto hover:bg-warmgray-600"
+              type="checkbox"
+              name="uploadUrlFile"
+              id="uploadUrlFile-checkbox"
+            >
+            <label
+              class="ml-4 leading-7 md:ml-0"
+              el
+              for="uploadUrlFile-
+            checkbox"
+            >Upload URL file?</label>
+          </div>
+          <div class="flex flex-row px-4 mx-4 my-2 md:flex-col">
+            <input
+              class="w-8 h-8 text-blue-600 border border-white rounded-md cursor-pointer md:mx-auto hover:bg-warmgray-600"
+              type="checkbox"
+              name="exactSizes"
+              id="exactSizes-checkbox"
+            >
+            <label
+              class="ml-4 leading-7 md:ml-0"
+              for="exactSizes-checkbox"
+            >Load exact sizes?</label>
+          </div>
+          <div class="flex flex-row px-4 mx-4 my-2 md:flex-col">
+            <input
+              class="w-8 h-8 text-blue-600 border border-white rounded-md cursor-pointer md:mx-auto hover:bg-warmgray-600 disabled:cursor-not-allowed"
+              type="checkbox"
+              name="uploadScan"
+              id="uploadScan-checkbox"
+              checked
+            >
+            <label
+              class="ml-4 leading-7 md:ml-0"
+              for="uploadScan-checkbox"
+            >
+              Upload scan to
+              <a
+                class="text-blue-500"
+                href="https://odcrawler.xyz"
+                target="_blank"
+              >ODCrawler</a>?
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <h3 class="">
+            Authentication (<span class="text-red-400">optional</span>):
+          </h3>
+          <div class="flex flex-row flex-wrap justify-center p-2 mb-2">
+            <div class="mx-4 my-1">
+              <label
+                class=""
+                for="exactSizes-checkbox"
+              >User Name:</label>
+              <input
+                class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2"
+                type="text"
+                name="username"
+                id="username-textfield"
+              >
+            </div>
+            <div class="mx-4 my-1">
+              <label
+                class=""
+                for="exactSizes-checkbox"
+              >Password:</label>
+              <input
+                class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2"
+                type="text"
+                name="exactSizes"
+                id="password-textfield"
+              >
+            </div>
+          </div>
+        </fieldset>
+        <button
+          class="p-2 px-8 mx-auto text-xl border-2 border-gray-200 rounded-md focus:outline-none w-52 h-14 hover:bg-warmGray-600 focus:ring-0 focus:border-blue-600 focus:border-2"
+          type="submit"
+        >Scan!</button>
+      </form>
+      <div class="grid grid-cols-2 grid-rows-1 gap-4 p-4 mb-6 text-lg text-center border border-gray-200 rounded-lg">
+        <div class="grid w-full h-24 border border-gray-200 rounded-md place-content-center">
+          <div class="w-full">
+            Status:
+            <br>
+            <span id="status">No Scan Running</span>
+          </div>
+        </div>
+        <div class="grid w-full h-24 border border-gray-200 rounded-md place-content-center">
+          <div class="w-full">
+            Duration:
+            <br>
+            <span id="time">Not yet started</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative hidden px-6 pt-12 pb-1 mx-auto text-center text-white bg-green-600 w-80 rounded-xl"
+        id="notification-card"
+      >
+        <button
+          class="absolute top-0 right-0 w-8 h-8 m-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          id="notification-card-dismiss-button"
+        >
+          <svg
+            class="text-white stroke-current icon icon-tabler icon-tabler-x"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke="none"
+              d="M0 0h24v24H0z"
+              fill="none"
+            />
+            <line
+              x1="18"
+              y1="6"
+              x2="6"
+              y2="18"
+            />
+            <line
+              x1="6"
+              y1="6"
+              x2="18"
+              y2="18"
+            />
+          </svg>
+        </button>
+        If you would like to receive a notification once the scan is done,
+        <br>
+        you'll need to click the button
+        below.
+        <br>
+        Doesn't work on mobile yet.
+        <button
+          class="p-2 mx-auto my-4 text-xl border-2 border-gray-200 rounded-md focus:outline-none w-52 h-14 hover:bg-green-500 focus:ring-0 focus:border-blue-600 focus:border-2"
+          id="notification-card-button"
+        >
+          Enable Notifications
+        </button>
+        <span
+          class=""
+          id="notification-card-output"
+        ></span>
+      </div>
+      <div
+        id="output"
+        class="hidden w-full h-auto p-2 mt-4 mb-6 prose text-white break-all bg-transparent border border-gray-200 rounded-md prose-dark max-w-none"
+      ></div>
+      <div class="flex flex-row justify-center w-full">
+        <button
+          id="json-button"
+          class="hidden w-64 h-20 p-2 px-8 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+        >
+          Download JSON-File
+        </button>
+        <button
+          id="clipboard-button"
+          class="hidden w-64 h-20 p-2 px-8 mx-4 border-2 border-gray-200 rounded-md hover:bg-warmGray-600 disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-500"
+        ></button>
+        <button
+          id="url-button"
+          class="hidden w-64 h-20 p-2 px-8 border-2 border-gray-200 rounded-md hover:bg-warmGray-600"
+        >
+          Download URL-List
+        </button>
+      </div>
+    </main>
+    <!-- DON'T TOUCH THE LINE BELOW -->
+    <script
+      type="module"
+      src="./src/index.js"
+    ></script>
+    <!-- DON'T TOUCH THE LINE ABOVE -->
+    <!-- ONLY JAVASCRIPT SHOULD GO BELOW -->
+  </body>
+
+</html>
