@@ -1,6 +1,6 @@
-/.env
-/node_modules
-public/node_modules
-public/static/webpack/
-public/static/scans/
+.env
+node_modules/
+public/node_modules/
+public/dist/
+scans/
 .vscode/

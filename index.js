@@ -10,7 +10,7 @@ betterLogging(console, {
 console.logLevel = process.env.environment === `development` ? 4 : 2
 const odd = require(`open-directory-downloader`)
 const Koa = require(`koa`)
-const router = require(`@koa/router`)()
+const Router = require(`@koa/router`)
 const forceHTTPS = require('koa-force-https');
 const cors = require(`@koa/cors`)
 const static = require('koa-static')
@@ -19,20 +19,7 @@ const bodyParser = require(`koa-bodyparser`)
 
 const GuiConnection = require(`./gui-connection`)
 const util = require(`./util`)
-
-
-// // Listen
-// const httpServer = http.createServer(app.callback())
-//   .listen(HTTP_PORT, HOST, listeningReporter)
-// const httpsServer = https.createServer(app.callback())
-//   .listen(HTTPS_PORT, HOST, listeningReporter)
-// // A function that runs in the context of the http server
-// // and reports what type of server listens on which port
-// function listeningReporter () {
-//   // `this` refers to the http server here
-//   const { address, port } = this.address();
-//   const protocol = this.addContext ? 'https' : 'http';
-//   console.log(`Listening on ${protocol}://${address}:${port}...`);
+const mount = require('koa-mount')
 
 const app = new Koa()
 // if (process.env.environment !== `development`) {
@@ -46,7 +33,14 @@ app.use(async (context, next) => {
   }
   await next() // ALWAYS use `await` with next, to wait for other middlewares before sending the response
 })
-app.use(static(`./public/static`));
+
+const staticServer = new Koa()
+staticServer.use(static(`./public/dist`));
+const scanServer = new Koa()
+scanServer.use(static(`./scans`));
+app.use(mount(`/`, staticServer));
+app.use(mount(`/scans`, scanServer));
+
 app.use(compress({
   br: {
     params: {
@@ -64,7 +58,6 @@ const indexer = new odd.OpenDirectoryDownloader({
 })
 const clients = new GuiConnection(server)
 
-app.use(router.routes());
 
 clients.on(`command`, commandHandler)
 
@@ -183,9 +176,9 @@ async function commandHandler(socketId, command) {
         }
         
         let newJsonPath = `/scans/${socketId}_${Date.now()}.json`
-        let newJsonPathAbsolute = `${__dirname}/public/static${newJsonPath}`
+        let newJsonPathAbsolute = `${__dirname}${newJsonPath}`
         let newUrlPath = `/scans/${socketId}_${Date.now()}.txt`
-        let newUrlPathAbsolute = `${__dirname}/public/static${newUrlPath}`
+        let newUrlPathAbsolute = `${__dirname}${newUrlPath}`
 
         try {
           fs.renameSync(scanResult.jsonFile, newJsonPathAbsolute)

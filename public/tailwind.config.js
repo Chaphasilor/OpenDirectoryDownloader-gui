@@ -1,11 +1,6 @@
 module.exports = {
-  purge: {
-    content: [
-      // scans your html files for tailwind classes and deletes any unused class definitions when building for production
-      // I can't think of any reason why you should change this
-      './static/**/*.html',
-    ],
-  },
+  mode: `jit`,
+  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   presets: [
     // don't modify this preset if you don't know exactly what you're doing!
     require(`./extended-colors.preset.js`),

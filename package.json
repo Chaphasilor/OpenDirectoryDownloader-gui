@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "watch": "nodemon --ignore scans/ --ignore public/",
+    "dev": "concurrently 'npm:watch' 'npm:serve'",
+    "serve": "cd public && npm run dev",
     "build": "cd public && npm i && npm run build"
   },
   "author": "Chaphasilor",
@@ -21,11 +24,12 @@
     "koa-bodyparser": "^4.3.0",
     "koa-compress": "^5.0.1",
     "koa-force-https": "^2.0.1",
+    "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "node-fetch": "^2.6.1",
     "open-directory-downloader": "^4.0.2",
     "uuid": "^8.3.2",
-    "ws": "^7.4.3",
+    "ws": "^7.5.3",
     "zlib": "^1.0.5"
   },
   "devDependencies": {
@@ -34,10 +38,11 @@
     "browser-sync": "^2.26.13",
     "browser-sync-webpack-plugin": "^2.2.2",
     "clean-webpack-plugin": "^3.0.0",
+    "concurrently": "^6.2.0",
     "css-loader": "^5.0.0",
     "cssnano": "^4.1.10",
     "file-loader": "^6.1.1",
-    "postcss": "^8.2.8",
+    "postcss": "^8.3.6",
     "postcss-loader": "^4.0.4",
     "style-loader": "^2.0.0",
     "tailwindcss": "^2.0.4",

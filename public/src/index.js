@@ -1,5 +1,6 @@
-// import *any file or dependency (module)* that you want to bundle here
+import './tailwind.css'; // import tailwind so that it gets bundled by vite
 
+// import *any file or dependency (module)* that you want to bundle here
 import API from './api';
 import marked from 'marked'
 
@@ -72,6 +73,12 @@ window.onload = function() {
   } else {
     host = location.origin.replace(/^http/, 'ws')
   }
+  if (import.meta.env.DEV) {
+    let hostUrl = new URL(host)
+    hostUrl.port = 73
+    host = hostUrl.toString()
+  }
+  
   api = new API(host)
   api.connectToServer().catch(err => {
     console.error(`Error while connecting to backend:`, err)
@@ -138,6 +145,7 @@ function handleScanUpdate(response) {
       // show buttons
       jsonButton.classList.remove(`hidden`)
       jsonButton.addEventListener(`click`, () => {
+        console.log(`response.scanResult.jsonFile:`, response.scanResult.jsonFile)
         downloadUrl(response.scanResult.jsonFile, `OD-Scan_${new URL(response.scanResult.scannedUrl).host}_${new Date().toISOString().substring(0, 10)}.json`)
       })
       urlButton.classList.remove(`hidden`)
@@ -226,7 +234,7 @@ function showNotificationCard() {
     if ([`granted`, `denied`].includes(permission)) {
       notificationCard.classList.add(`hidden`)
     } else {
-      notificationCardOutput = `Sorry, something went wrong. Please try that again.`
+      notificationCardOutput.textContent = `Sorry, something went wrong. Please try that again.`
     }
     
   })
@@ -255,6 +263,6 @@ setInterval(() => {
 
 
 // !! IMPORTANT: !!
-// Webpack doesn't automatically assing global variables to the window context when importing the bundle
+// Vite doesn't automatically assing global variables to the window context when importing the bundle
 // Assign all variables, functions and classes, that you want to be accessible from html, to the window context
 
