@@ -36,6 +36,23 @@ const notificationCardOutput = document.querySelector(`#notification-card-output
 const clipboardButtonText = `Copy Stats to Clipboard`
 
 urlForm.addEventListener(`submit`, performScan)
+advancedOptionInputs.auth.username.addEventListener(`input`, handlePrivateOD)
+advancedOptionInputs.auth.password.addEventListener(`input`, handlePrivateOD)
+
+function handlePrivateOD(e) {
+
+  if ((advancedOptionInputs.auth.username.value + advancedOptionInputs.auth.password.value).length > 0) {
+    // disable ODCrawler upload
+    advancedOptionInputs.uploadScan.checked = false
+    advancedOptionInputs.uploadScan.disabled = true
+    advancedOptionInputs.uploadScan.title = `Only PUBLIC ODs (no authentication needed) can be uploaded to ODCrawler!`
+  } else {
+    advancedOptionInputs.uploadScan.checked = true
+    advancedOptionInputs.uploadScan.disabled = false
+    advancedOptionInputs.uploadScan.title = ``
+  }
+  
+}
 
 async function performScan() {
 
@@ -132,9 +149,10 @@ function handleScanUpdate(response) {
           clipboardButton.title = `Copying to clipboard is not available!`
         } else {
           clipboardButton.addEventListener(`click`, () => {
-            navigator.clipboard.writeText(response.scanResult.reddit);
+            let textToCopy = response.scanResult.reddit + response.scanResult.credits
+            navigator.clipboard.writeText(textToCopy);
             clipboardButton.innerText = `Copied Successfully!`
-            setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500  )
+            setTimeout(() => clipboardButton.innerText = clipboardButtonText, 2500)
           })
         }
 
