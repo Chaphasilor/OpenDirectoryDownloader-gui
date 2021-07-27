@@ -17,7 +17,7 @@
 
   <body class="text-gray-200 bg-warmgray-800">
     <h1 class="mt-6 mb-10 text-3xl text-center">OpenDirectoryDownloader</h1>
-    <main class="px-6 mb-32 xl:px-56 lg:px-48 md:px-32">
+    <main class="px-6 mb-16 xl:px-56 lg:px-48 md:px-32">
       <form
         class="flex flex-col w-full m-auto mb-12 text-center"
         id="url-form"
@@ -174,23 +174,9 @@
             stroke-linejoin="round"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              stroke="none"
-              d="M0 0h24v24H0z"
-              fill="none"
-            />
-            <line
-              x1="18"
-              y1="6"
-              x2="6"
-              y2="18"
-            />
-            <line
-              x1="6"
-              y1="6"
-              x2="18"
-              y2="18"
-            />
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
         If you would like to receive a notification once the scan is done,
@@ -233,6 +219,22 @@
         </button>
       </div>
     </main>
+
+    <footer
+      class="pb-20"
+    >
+
+      <h3
+        class="text-lg font-bold text-center"
+      >Scan History</h3>
+      <ul
+        id="history"
+        class="w-3/4 px-4 mx-auto"
+      >
+        
+      </ul>
+    </footer>
+    
     <!-- DON'T TOUCH THE LINE BELOW -->
     <script
       type="module"

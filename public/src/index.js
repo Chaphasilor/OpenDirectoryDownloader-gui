@@ -1,8 +1,10 @@
 import './tailwind.css'; // import tailwind so that it gets bundled by vite
 
 // import *any file or dependency (module)* that you want to bundle here
-import API from './api';
 import marked from 'marked'
+
+import API from './api';
+import * as HISTORY from './history';
 
 // regular javascript goes below
 
@@ -33,11 +35,15 @@ const notificationCardButton = document.querySelector(`#notification-card-button
 const notificationCardDismissButton = document.querySelector(`#notification-card-dismiss-button`)
 const notificationCardOutput = document.querySelector(`#notification-card-output`)
 
+const historyList = document.querySelector(`#history`)
+
 const clipboardButtonText = `Copy Stats to Clipboard`
 
 urlForm.addEventListener(`submit`, performScan)
 advancedOptionInputs.auth.username.addEventListener(`input`, handlePrivateOD)
 advancedOptionInputs.auth.password.addEventListener(`input`, handlePrivateOD)
+
+showHistory()
 
 function handlePrivateOD(e) {
 
@@ -197,6 +203,14 @@ function handleScanUpdate(response) {
         
       }
 
+      // save scan to history
+      HISTORY.addEntry({
+        url: response.scanResult.scannedUrl,
+        scanResult: response.scanResult,
+        //TODO save options used for the scan
+      })
+      showHistory()
+
       break;
   }
   
@@ -257,6 +271,30 @@ function showNotificationCard() {
     
   })
 
+}
+
+function showHistory() {
+
+  const history = HISTORY.loadHistory()
+
+  historyList.innerHTML = `<span class="text-center w-full inline-block">No scans yet</scans>`
+
+  if (history.entries.length > 0) {
+    historyList.innerHTML = ``
+  }
+  
+  //TODO expand on click and show markdown + copy button
+  history.entries.forEach(entry => {
+    historyList.innerHTML += `
+    <li
+      class="flex flex-row justify-between"
+    >
+      <a href="${entry.url}" class="underline text-blue-500">${entry.url}</a>
+      <span class="">${new Date(entry.timestamp).toLocaleString()}</span>
+    </li>
+    `
+  })
+  
 }
 
 function formatTime(startTime){
