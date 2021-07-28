@@ -287,15 +287,55 @@ function showHistory() {
   history.entries.forEach(entry => {
     historyList.innerHTML += `
     <li
-      class="flex flex-row justify-between"
+      id="entry-${new Date(entry.timestamp).getTime()}"
+      class="flex flex-col"
     >
-      <a href="${entry.url}" class="underline text-blue-500">${entry.url}</a>
-      <span class="">${new Date(entry.timestamp).toLocaleString()}</span>
+      <div
+        class="flex flex-row justify-between"
+      >
+        <a href="${entry.url}" class="underline text-blue-500">${entry.url}</a>
+        <div class="flex flex-row">
+          <span>${new Date(entry.timestamp).toLocaleString()}</span>
+          <button
+            class="w-6 h-6 ml-10"
+            onclick="expandHistoryItem('${entry.timestamp}')"
+          >
+            <svg
+              class="text-white stroke-current"
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </li>
     `
   })
   
 }
+
+function expandHistoryItem(timestamp) {
+
+  let entry = HISTORY.fetchEntry(timestamp)
+  const parent = document.querySelector(`li#entry-${new Date(timestamp).getTime()}`)
+  const button = parent.querySelector(`div>button`)
+  button.classList.add(`rotate-180`)
+  button.onclick = () => {
+    button.classList.remove(`rotate-180`)
+    resultContainer.remove()
+    button.onclick = () => expandHistoryItem(timestamp)
+  }
+  
+  const resultContainer = document.createElement(`div`)
+  resultContainer.className = `w-full h-auto p-2 mt-4 mb-6 prose text-white break-all bg-transparent border border-gray-200 rounded-md prose-dark max-w-none`
+  resultContainer.innerHTML = marked(entry.scanResult.reddit)
+  parent.appendChild(resultContainer)
+
+  resultContainer.scrollIntoView()
+  
+}
+window.expandHistoryItem = expandHistoryItem
 
 function formatTime(startTime){
   let updatedTime = new Date().getTime();

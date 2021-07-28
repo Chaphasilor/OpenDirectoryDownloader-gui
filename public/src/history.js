@@ -30,6 +30,10 @@ export function saveHistory(newHistory) {
   
 }
 
+export function fetchEntry(timestamp) {
+  return JSON.parse(localStorage.getItem(timestamp))
+}
+
 export function fetchEntries(history) {
 
   // fetch all entries
