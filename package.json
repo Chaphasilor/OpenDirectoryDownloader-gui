@@ -27,7 +27,7 @@
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "node-fetch": "^2.6.1",
-    "open-directory-downloader": "^6.1.1",
+    "open-directory-downloader": "^6.1.2",
     "uuid": "^8.3.2",
     "ws": "^7.5.3",
     "zlib": "^1.0.5"
