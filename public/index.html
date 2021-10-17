@@ -114,7 +114,7 @@
             <div class="mx-4 my-1">
               <label
                 class=""
-                for="exactSizes-checkbox"
+                for="username-textfield"
               >User Name:</label>
               <input
                 class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2"
@@ -126,7 +126,7 @@
             <div class="mx-4 my-1">
               <label
                 class=""
-                for="exactSizes-checkbox"
+                for="password-textfield"
               >Password:</label>
               <input
                 class="w-32 h-8 p-1 m-1 bg-transparent border border-gray-200 rounded-md focus:outline-none focus:ring-0 focus:border-blue-600 focus:border-2"
@@ -142,7 +142,10 @@
           type="submit"
         >Scan!</button>
       </form>
-      <div class="grid grid-cols-2 grid-rows-1 gap-4 p-4 mb-6 text-lg text-center border border-gray-200 rounded-lg">
+      <div
+        id="overview"
+        class="grid grid-cols-2 grid-rows-1 gap-4 p-4 mb-6 text-lg text-center border border-gray-200 rounded-lg"
+      >
         <div class="grid w-full h-24 border border-gray-200 rounded-md place-content-center">
           <div class="w-full">
             Status:
@@ -155,6 +158,17 @@
             Duration:
             <br>
             <span id="time">Not yet started</span>
+          </div>
+        </div>
+        <div id="stats-panel" class="hidden w-full col-span-2 border border-gray-200 rounded-md place-content-center">
+          <div class="w-full">
+            Stats:
+            <br>
+            <div
+              id="stats-section"
+              class="flex flex-row flex-wrap justify-center p-1"
+            >
+            </div>
           </div>
         </div>
       </div>
@@ -196,6 +210,7 @@
           id="notification-card-output"
         ></span>
       </div>
+
       <div
         id="output"
         class="hidden w-full h-auto p-2 mt-4 mb-6 prose text-white break-all bg-transparent border border-gray-200 rounded-md prose-dark max-w-none"
@@ -218,6 +233,20 @@
           Download URL-List
         </button>
       </div>
+
+      <div
+        id="logs-section"
+        class="hidden mt-10 cursor-pointer"
+      >
+        <h3
+          class="sticky text-lg font-bold text-center"
+        >Logs</h3>
+        <div
+          id="logs"
+          class="w-full h-auto p-2 mt-4 mb-6 overflow-y-auto font-mono text-white break-all transition-all duration-1000 ease-in-out bg-transparent border border-gray-200 rounded-md max-h-48 max-w-none"
+        > </div>
+      </div>
+      
     </main>
 
     <footer
@@ -229,7 +258,7 @@
       >Scan History</h3>
       <ul
         id="history"
-        class="w-3/4 px-4 mx-auto"
+        class="w-full px-4 mx-auto md:w-3/4"
       >
         
       </ul>

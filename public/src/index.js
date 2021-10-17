@@ -25,10 +25,15 @@ const advancedOptionInputs = {
 }
 const statusField = document.querySelector(`#status`)
 const timeField = document.querySelector(`#time`)
+const overview = document.querySelector(`#overview`)
 const output = document.querySelector(`#output`)
 const clipboardButton = document.querySelector(`#clipboard-button`)
 const jsonButton = document.querySelector(`#json-button`)
-let urlButton = document.querySelector(`#url-button`)
+const urlButton = document.querySelector(`#url-button`)
+const logsSection = document.querySelector(`#logs-section`)
+const logsOutput = document.querySelector(`#logs`)
+const statsPanel = document.querySelector(`#stats-panel`)
+const statsSection = document.querySelector(`#stats-section`)
 
 const notificationCard = document.querySelector(`#notification-card`)
 const notificationCardButton = document.querySelector(`#notification-card-button`)
@@ -80,8 +85,18 @@ async function performScan() {
     advancedOptions.auth.password = advancedOptionInputs.auth.password.value
   }
   
+  logsOutput.innerText = ``
+  logsSection.classList.remove(`hidden`)
+
+  statsPanel.classList.remove(`hidden`)
+  statsPanel.classList.add(`grid`)
+
   await api.scanUrl(urlInput.value, advancedOptions)
   clearInterval(timeIntervalId)
+
+  overview.scrollIntoView({
+    behavior: `smooth`,
+  })
   
 }
 
@@ -109,6 +124,10 @@ window.onload = function() {
   
   api.on(`scanUpdate`, handleScanUpdate)
   api.on(`scanError`, handleScanError)
+  api.on(`scanStats`, handleScanStats)
+  api.on(`scanLogs`, handleScanLogs)
+
+  logsSection.addEventListener(`click`, toggleLogs)
   
 }
 
@@ -129,6 +148,7 @@ function handleScanUpdate(response) {
 
     case `running`:
       console.log(`Date.now():`, Date.now())
+      output.innerText = response.message
       startTime = Date.now()
       timeIntervalId = setInterval(() => {
         timeField.innerText = formatTime(startTime)
@@ -211,9 +231,16 @@ function handleScanUpdate(response) {
       })
       showHistory()
 
+      // scroll to results
+      setTimeout(() => {
+        overview.scrollIntoView({
+          behavior: `smooth`,
+        })
+      }, 500)
+
       break;
   }
-  
+
 }
 
 function handleScanError(err) {
@@ -230,6 +257,39 @@ Reason: ${err.reason}
 ${err.additionalPayload ? `Additional Info: ${err.additionalPayload}` : ``}
   `
   output.classList.remove(`hidden`)
+  
+}
+
+function handleScanLogs(logs) {
+
+  console.log(`logs:`, logs)
+  logsOutput.innerText += logs
+  logsOutput.scrollTo({
+    top: 9999999,
+    behavior: `smooth`,
+  })
+  
+}
+
+function handleScanStats(stats) {
+
+  statsSection.innerHTML = ``
+
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Total Files:</span><span class="ml-2">${stats.totalFiles}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Total Size:</span><span class="ml-2">${stats.totalSize}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Total Directories:</span><span class="ml-2">${stats.totalDirectories}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Total HTTP Requests:</span><span class="ml-2">${stats.totalHTTPRequests}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Total HTTP Traffic:</span><span class="ml-2">${stats.totalHTTPTraffic}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Queue (URLs):</span><span class="ml-2">${stats.urlQueue}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Threads (URLs):</span><span class="ml-2">${stats.urlThreads}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Queue (sizes):</span><span class="ml-2">${stats.sizeQueue}</span> </div>`
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Threads (sizes):</span><span class="ml-2">${stats.sizeThreads}</span> </div>`
+
+  let statusCodesString = ``
+  Object.entries(stats.statusCode).forEach(([code, amount], index, arr) => {
+    statusCodesString += `${code}: ${amount}${index == arr.length-1 ? `` : `, `}`
+  })
+  statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Status Codes:</span><span class="ml-2">${statusCodesString}</span> </div>`
   
 }
 
@@ -282,9 +342,9 @@ function showHistory() {
   if (history.entries.length > 0) {
     historyList.innerHTML = ``
   }
-  
+
   //TODO expand on click and show markdown + copy button
-  history.entries.forEach(entry => {
+  history.entries.reverse().forEach(entry => {
     historyList.innerHTML += `
     <li
       id="entry-${new Date(entry.timestamp).getTime()}"
@@ -293,15 +353,15 @@ function showHistory() {
       <div
         class="flex flex-row justify-between"
       >
-        <a href="${entry.url}" class="underline text-blue-500">${entry.url}</a>
+        <a href="${entry.url}" class="underline break-all text-blue-500">${entry.url}</a>
         <div class="flex flex-row">
-          <span>${new Date(entry.timestamp).toLocaleString()}</span>
+          <span>${new Date(entry.timestamp).toISOString().slice(0, 10)}, ${new Date(entry.timestamp).toISOString().slice(11, 19)}</span>
           <button
-            class="w-6 h-6 ml-10"
+            class="w-6 h-6 ml-2 md:ml-10"
             onclick="expandHistoryItem('${entry.timestamp}')"
           >
             <svg
-              class="text-white stroke-current"
+              class="text-white stroke-current w-6 h-6"
               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
               <polyline points="6 9 12 15 18 9" />
@@ -336,6 +396,18 @@ function expandHistoryItem(timestamp) {
   
 }
 window.expandHistoryItem = expandHistoryItem
+
+function toggleLogs() {
+
+  if (logsOutput.classList.contains(`max-h-0`)) {
+    logsOutput.classList.add(`max-h-48`)
+    logsOutput.classList.remove(`max-h-0`)
+  } else {
+    logsOutput.classList.add(`max-h-0`)
+    logsOutput.classList.remove(`max-h-48`)
+  }
+  
+}
 
 function formatTime(startTime){
   let updatedTime = new Date().getTime();
