@@ -286,7 +286,7 @@ function handleScanStats(stats) {
   statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Threads (sizes):</span><span class="ml-2">${stats.sizeThreads}</span> </div>`
 
   let statusCodesString = ``
-  Object.entries(stats.statusCode).forEach(([code, amount], index, arr) => {
+  Object.entries(stats.statusCodes).forEach(([code, amount], index, arr) => {
     statusCodesString += `${code}: ${amount}${index == arr.length-1 ? `` : `, `}`
   })
   statsSection.innerHTML += `<div class="flex flex-row m-0.5 px-2 py-1 align-middle border border-white rounded-md place-content-center"> <span class="font-semibold align-middle">Status Codes:</span><span class="ml-2">${statusCodesString}</span> </div>`
@@ -427,7 +427,7 @@ function capitalize(input) {
 
 setInterval(() => {
   fetch(`/keepalive`)
-}, 1000*60*5)
+}, 1000 * 30)
 
 
 // !! IMPORTANT: !!
