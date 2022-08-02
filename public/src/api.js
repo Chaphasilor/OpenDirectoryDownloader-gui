@@ -141,9 +141,11 @@ export default class API extends EventTarget {
    * ### Sends a command to the API and allows to handle responses to the command
    * @param {String} command the commmand to send to the server
    * @param {Object} payload the payload to send alongside the command
-   * @param {Function} responseHandler a callback for handling responses *to this command only*
+   * @param {Function} responseHandler a callback for handling responses to *this command only*
+   * @param {Function} errorHandler a callback for handling errors with *this command only*
+   * @param {Function} infoHandler a callback for handling additional info about *this command only*
    */
-  async sendCommand(command, payload, responseHandler, errorHandler) {
+  async sendCommand(command, payload, responseHandler, errorHandler, infoHandler) {
     
     // make sure we are connected to the backend API
     if (!this.connected) {
@@ -170,6 +172,7 @@ export default class API extends EventTarget {
       name: command,
       handler: responseHandler,
       errorHandler: errorHandler,
+      infoHandler: infoHandler,
     })
 
     // handle responses by the server
@@ -196,7 +199,6 @@ export default class API extends EventTarget {
           // if the reply is a command end, remove the command from the active commands
           this.activeCommands = this.activeCommands.filter(x => x !== command)
           break;
-      
         case `error`:
           // error ocurred, but command hasn't ended yet
           console.error(`Command '${parsed.value[0]}' threw an error:`, parsed.value[1])
@@ -204,6 +206,10 @@ export default class API extends EventTarget {
             reason: parsed.value[1],
             additionalPayload: parsed.value.length > 2 ? parsed.value[2] : undefined,
           })
+          break;
+        case `info`:
+          // if the reply is additional info, invoke the active command's info handler
+          command.infoHandler(parsed.value[1])    
           break;
       
         default:
@@ -227,6 +233,20 @@ export default class API extends EventTarget {
       (err) => {
         console.log(`err:`, err)
         this.emit(`scanError`, err)
+      },
+      (info) => {
+        console.log(`info:`, info)
+        switch (info.type) {
+          case `stats`:
+            this.emit(`scanStats`, info.data)
+            break;
+          case `logs`:
+            this.emit(`scanLogs`, info.data)
+            break;
+        
+          default:
+            break;
+        }
       }
     )
     

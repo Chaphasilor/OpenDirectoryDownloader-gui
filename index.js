@@ -54,7 +54,8 @@ let server = http.createServer(app.callback())
 server.listen(process.env.PORT)
 
 const indexer = new odd.OpenDirectoryDownloader({
-  maximumMemory: process.env.MAX_MEMORY
+  maximumMemory: process.env.MAX_MEMORY,
+  statsInterval: 3,
 })
 const clients = new GuiConnection(server)
 
@@ -75,6 +76,16 @@ async function commandHandler(socketId, command) {
   let response = (payload) => {
     return {
       type: `response`,
+      value: [
+        command[0],
+        payload,
+      ]
+    }
+  }
+  
+  let info = (payload) => {
+    return {
+      type: `info`,
       value: [
         command[0],
         payload,
@@ -139,14 +150,44 @@ async function commandHandler(socketId, command) {
           message: `The Open Directory is now being scanned`
         }))
         
+        let scan
         let scanResult
         try {
-          scanResult = await indexer.scanUrl(command[1], {
+
+          scan = indexer.scanUrl(command[1], {
             keepJsonFile: true,
             keepUrlFile: true,
             ...oddOptions,
           })
+
+          scan.live.on(`stats`, stats => {
+            clients.send(socketId, info({
+              type: `stats`,
+              data: {
+                version: stats.version,
+                totalFiles: stats.totalFiles,
+                totalSize: stats.totalSize,
+                totalDirectories: stats.totalDirectories,
+                statusCodes: stats.statusCodes,
+                totalHTTPRequests: stats.totalHTTPRequests,
+                totalHTTPTraffic: stats.totalHTTPTraffic,
+                urlQueue: stats.urlQueue,
+                urlThreads: stats.urlThreads,
+                sizeQueue: stats.sizeQueue,
+                sizeThreads: stats.sizeThreads,
+              }
+            }))
+          })
+          scan.live.on(`logs`, logs => {
+            clients.send(socketId, info({
+              type: `logs`,
+              data: logs,
+            }))
+          })
+          
+          scanResult = await scan
           console.log(`Scan finished.`)
+
         } catch (err) {
 
           console.warn(`Indexer threw an error:`, err)
