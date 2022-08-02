@@ -1,0 +1,26 @@
+name: Auto-update open-directory-downloader
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '14 11 * * *'
+jobs:
+  auto-update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the head commit of the branch
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+                  
+    - name: Node.js setup
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+    
+    - name: Run auto dependency update 
+      uses: romoh/dependencies-autoupdate@v1
+      with: 
+        token: ${{ secrets.GITHUB_TOKEN }}
+        update-command: "'npm update open-directory-downloader'"
