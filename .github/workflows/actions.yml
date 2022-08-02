@@ -12,9 +12,9 @@ jobs:
 
       - name: Node.js setup
         uses: actions/setup-node@v3
-          with:
-            node-version: '16.x'
-            registry-url: 'https://registry.npmjs.org'
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Run auto dependency update 
         uses: romoh/dependencies-autoupdate@v1
