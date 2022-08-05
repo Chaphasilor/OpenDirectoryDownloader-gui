@@ -2,7 +2,7 @@ name: Auto-update open-directory-downloader
 on:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '14 11 * * *'
+    - cron:  '14 11 */2 * *'
 jobs:
   auto-update:
     runs-on: ubuntu-latest
@@ -20,4 +20,4 @@ jobs:
         uses: romoh/dependencies-autoupdate@v1
         with: 
           token: ${{ secrets.GITHUB_TOKEN }}
-          update-command: "'npm update open-directory-downloader'"
+          update-command: "'npm update open-directory-downloader || echo $?'" # always return exit code 0 to prevent action errors, and log the actual exit code
